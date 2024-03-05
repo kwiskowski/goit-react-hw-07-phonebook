@@ -1,0 +1,25 @@
+.contactButton {
+  margin-left: 20px;
+  font-size: 14px;
+
+  cursor: pointer;
+  background-color: white;
+  border: 1px solid gainsboro;
+  border-radius: 5px;
+}
+
+.contactListItem {
+  list-style-type: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.contactName {
+  margin-right: 10px;
+}
+
+.contactNumber {
+  margin-right: 10px;
+}
