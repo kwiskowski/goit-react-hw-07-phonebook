@@ -1,24 +1,35 @@
-import { useSelector } from 'react-redux';
-import { getContacts, getFilter } from 'components/redux/selectors';
+import { useSelector, useDispatch } from 'react-redux';
+import { useEffect } from 'react';
+import {
+  selectFilteredContacts,
+  selectError,
+  selectIsLoading,
+} from 'components/redux/selectors';
+import { fetchContacts } from 'components/redux/operations';
 import PhonebookItem from 'components/PhonebookItem/PhonebookItem';
-
-const getFilteredContacts = (contacts, filter) => {
-  const normalizedFilter = filter.toLowerCase();
-  return contacts.filter(contact =>
-    contact.name.toLowerCase().includes(normalizedFilter)
-  );
-};
+import { Loader } from 'components/Loader/Loader';
 
 function PhonebookList() {
-  const contacts = useSelector(getContacts);
-  const filter = useSelector(getFilter);
-  const filteredContacts = getFilteredContacts(contacts, filter);
+  const filteredContacts = useSelector(selectFilteredContacts);
+  const error = useSelector(selectError);
+  const isLoading = useSelector(selectIsLoading);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchContacts());
+  }, [dispatch]);
 
   return (
     <ul>
-      {filteredContacts.map(({ id, name, number }) => (
-        <PhonebookItem key={id} contact={{ id, name, number }} />
-      ))}
+      {isLoading && !error ? (
+        <Loader />
+      ) : filteredContacts.length === 0 && !error ? (
+        <p>Sorry, there are no matches to this query</p>
+      ) : (
+        filteredContacts.map(({ id, name, number }) => (
+          <PhonebookItem key={id} contact={{ id, name, number }} />
+        ))
+      )}
     </ul>
   );
 }

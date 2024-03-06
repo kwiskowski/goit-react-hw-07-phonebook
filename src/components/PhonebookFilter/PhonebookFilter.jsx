@@ -1,13 +1,14 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { getContacts, getFilter } from 'components/redux/selectors';
-import { setContactsFilter } from 'components/redux/filterSlice';
+import { selectContacts, selectFilter } from 'components/redux/selectors';
+import { setFilter } from 'components/redux/filterSlice';
 import css from './PhonebookFilter.module.css';
 
 function Filter() {
   const dispatch = useDispatch();
+  const filter = useSelector(selectFilter);
 
   const handleFilterChange = e => {
-    dispatch(setContactsFilter(e.target.value));
+    dispatch(setFilter(e.target.value.trim()));
   };
 
   return (
@@ -16,9 +17,9 @@ function Filter() {
       type="text"
       name="filter"
       placeholder="Search by name"
-      value={useSelector(getFilter)}
+      value={filter}
       onChange={handleFilterChange}
-      disabled={useSelector(getContacts).length === 0}
+      disabled={useSelector(selectContacts).length === 0}
     />
   );
 }

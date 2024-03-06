@@ -1,6 +1,6 @@
 import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
-import { deleteContact } from 'components/redux/contactsSlice';
+import { deleteContact } from 'components/redux/operations';
 import css from './PhonebookItem.module.css';
 
 function PhonebookItem({ contact }) {

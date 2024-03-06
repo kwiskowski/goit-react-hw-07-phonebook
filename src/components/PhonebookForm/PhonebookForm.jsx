@@ -1,79 +1,13 @@
-// import { useState } from 'react';
-// import css from './PhonebookForm.module.css';
-// import PropTypes from 'prop-types';
-
-// export const PhonebookForm = ({ onSubmit }) => {
-//   const [name, setName] = useState('');
-//   const [number, setNumber] = useState('');
-
-//   const handleSubmit = e => {
-//     e.preventDefault();
-
-//     onSubmit({ name, number });
-//     setName('');
-//     setNumber('');
-//   };
-
-//   const handleNameChange = e => {
-//     setName(e.target.value);
-//   };
-
-//   const handleNumberChange = e => {
-//     setNumber(e.target.value);
-//   };
-
-//   return (
-//     <div>
-//       <form className={css.form} onSubmit={handleSubmit}>
-//         <label className={css.label}>
-//           Name
-//           <input
-//             type="text"
-//             name="name"
-//             pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
-//             title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
-//             required
-//             value={name}
-//             onChange={handleNameChange}
-//             className={css.input}
-//           />
-//         </label>
-
-//         <label className={css.label}>
-//           <input
-//             type="tel"
-//             name="number"
-//             pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
-//             title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
-//             required
-//             value={number}
-//             onChange={handleNumberChange}
-//             className={css.input}
-//           />
-//         </label>
-
-//         <button type="submit" className={css.button}>
-//           Add contact
-//         </button>
-//       </form>
-//     </div>
-//   );
-// };
-
-// PhonebookForm.propTypes = {
-//   onSubmit: PropTypes.func.isRequired,
-// };
-
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { addContact } from 'components/redux/contactsSlice';
+import { addContact } from 'components/redux/operations';
 import Notiflix from 'notiflix';
+import { selectContacts } from 'components/redux/selectors';
 import css from './PhonebookForm.module.css';
 
-function PhonebookForm() {
+const PhonebookForm = () => {
   const dispatch = useDispatch();
-  const contacts = useSelector(state => state.contacts);
-
+  const contacts = useSelector(selectContacts);
   const [name, setName] = useState('');
   const [number, setNumber] = useState('');
 
@@ -85,40 +19,43 @@ function PhonebookForm() {
     setNumber(e.target.value);
   };
 
-  const handleSubmit = event => {
-    event.preventDefault();
+  const handleSubmit = e => {
+    e.preventDefault();
 
-    if (name.trim() === '' || number.trim() === '') {
-      return;
-    }
+    const contact = {
+      name: name,
+      number: number,
+    };
 
     const isContactExist = contacts.find(
-      contact => contact.name.toLowerCase() === name.toLowerCase()
+      ({ name }) => name.toLowerCase() === contact.name.toLowerCase()
     );
 
     if (isContactExist) {
       Notiflix.Report.warning(
         'Alert',
-        `Contact with name ${name} already exists!`,
+        `Contact with name ${contact.name} already exists!`,
         'Ok'
       );
       return;
     }
 
     const isNumberExist = contacts.find(
-      contact => contact.number.replace(/\D/g, '') === number.replace(/\D/g, '')
+      ({ number }) =>
+        // contact.number.replace(/\D/g, '') === number.replace(/\D/g, '')
+        contact.number === number
     );
 
     if (isNumberExist) {
       Notiflix.Report.warning(
         'Alert',
-        `Number ${number} is already in contacts!`,
+        `Number ${contact.number} is already in contacts!`,
         'Ok'
       );
       return;
     }
 
-    dispatch(addContact(name, number));
+    dispatch(addContact(contact));
     setName('');
     setNumber('');
   };
@@ -157,6 +94,6 @@ function PhonebookForm() {
       </button>
     </form>
   );
-}
+};
 
 export default PhonebookForm;
